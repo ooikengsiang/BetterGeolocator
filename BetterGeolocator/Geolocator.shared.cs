@@ -77,6 +77,9 @@ namespace BetterGeolocator
         /// <returns>Best / most accurate location of the device in the time given.</returns>
         public Task<Geolocation> GetLocation(TimeSpan timeout, double targetAccuracy = DefaultTargetAccuracy, double targetFreshness = DefaultTargetFreshness, CancellationToken? cancellationToken = null)
         {
+#if NETSTANDARD
+            return Task.FromResult((Geolocation)null);
+#else
             TargetAccuracy = targetAccuracy;
             TargetFreshness = targetFreshness;
 
@@ -106,6 +109,7 @@ namespace BetterGeolocator
 
                 return LocationTaskCompletionSource.Task;
             }
+#endif
         }
 
         /// <summary>
@@ -117,6 +121,9 @@ namespace BetterGeolocator
         /// <param name="cancellationToken">Cancellation token, to stop the location.</param>
         public void StartCacheLocation(double targetAccuracy = DefaultTargetAccuracy, CancellationToken? cancellationToken = null)
         {
+#if NETSTANDARD
+            // Nothing here
+#else
             TargetAccuracy = targetAccuracy;
             TargetFreshness = DefaultTargetFreshness;
 
@@ -128,6 +135,7 @@ namespace BetterGeolocator
 
             // Begin to retrieve location data
             StartLocationUpdate();
+#endif
         }
 
         /// <summary>

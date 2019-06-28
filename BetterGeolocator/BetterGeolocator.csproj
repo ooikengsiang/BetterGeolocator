@@ -1,6 +1,23 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.68">
+<Project Sdk="MSBuild.Sdk.Extras/1.6.68">
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;Xamarin.iOS10;MonoAndroid80;MonoAndroid81;MonoAndroid90</TargetFrameworks>
+    </PropertyGroup>
+
+    <!--Constants-->
+    <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+        <DefineConstants>NETSTANDARD</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+        <DefineConstants>ANDROID</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+        <DefineConstants>IOS</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+        <DefineConstants>UWP</DefineConstants>
     </PropertyGroup>
 
     <!--Includes-->
@@ -10,9 +27,13 @@
         <None Include="**\*.cs" />
     </ItemGroup>
 
-    <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+    <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
         <Compile Include="**\*.shared.cs" />
-        <Compile Include="**\*.uwp.cs" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+        <Compile Include="**\*.shared.cs" />
+        <Compile Include="**\*.android.cs" />
     </ItemGroup>
 
     <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
@@ -20,9 +41,9 @@
         <Compile Include="**\*.ios.cs" />
     </ItemGroup>
 
-    <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+    <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
         <Compile Include="**\*.shared.cs" />
-        <Compile Include="**\*.android.cs" />
+        <Compile Include="**\*.uwp.cs" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid90'">
@@ -39,17 +60,4 @@
       <PackageReference Include="Xamarin.GooglePlayServices.Location" Version="60.1142.1">
       </PackageReference>
     </ItemGroup>
-
-    <!--Constants-->
-    <PropertyGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-        <DefineConstants>ANDROID</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
-        <DefineConstants>IOS</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
-        <DefineConstants>UWP</DefineConstants>
-    </PropertyGroup>
 </Project>
