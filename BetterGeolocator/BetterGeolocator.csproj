@@ -1,6 +1,39 @@
-<Project Sdk="MSBuild.Sdk.Extras/1.6.68">
+﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.68">
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;Xamarin.iOS10;MonoAndroid80;MonoAndroid81;MonoAndroid90</TargetFrameworks>
+
+        <!-- The identifier that must be unique within the hosting gallery -->
+        <PackageId>BetterGeolocator</PackageId>
+
+        <!-- The package version number that is used when resolving dependencies -->
+        <PackageVersion>1.0.0</PackageVersion>
+
+        <!-- Package title that appears directly on the gallery -->
+        <Title>Better Geolocator</Title>
+
+        <!-- Authors contain text that appears directly on the gallery -->
+        <Authors>Ooi Keng Siang</Authors>
+
+        <!-- URL for the repository where the source code for the package resides -->
+        <RepositoryUrl>https://github.com/ooikengsiang/BetterGeolocator</RepositoryUrl>
+
+        <!-- The icon is used in Visual Studio's package manager UI -->
+        <PackageIconUrl>https://github.com/ooikengsiang/BetterGeolocator/raw/master/BetterGeolocatorIcon.png</PackageIconUrl>
+
+        <!-- License information is displayed on the gallery -->
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+        <!-- If true, this value prompts the user to accept the license when installing the package -->
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+        <!-- The description can be used in package manager UI. Note that the nuget.org gallery uses information you add in the portal. -->
+        <PackageDescription>Better Geolocator is a cross-platforms location library written in C# that focus on getting a usable location as quickly as possible with the least amount of code. In the event when the latest high accurate location is not available, the next best location will be return instead. Thus allow application to continue to work if needed. For example, when user is inside a building. In Android implementation, the library handle more than just location. The library uses Fused Location Provider from Google Play Service because of it's better performance. If Google Play service is not available, Android's Location Manager will use used automatically instead.</PackageDescription>
+
+        <!-- Copyright information -->
+        <Copyright>Copyright © 2019 ooiks.com</Copyright>
+
+        <!-- Tags appear in the gallery and can be used for tag searches -->
+        <PackageTags>Xamarin Android iOS Location</PackageTags>
     </PropertyGroup>
 
     <!--Constants-->
