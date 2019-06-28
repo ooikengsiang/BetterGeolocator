@@ -19,23 +19,28 @@ namespace BetterGeolocator
             // Don't start another location manager if there is one already running
             if (LocationManager == null)
             {
-                // Acquire a reference to the system Location Manager
-                LocationManager = new CLLocationManager();
-                if (LocationManager != null)
+                // Check permission
+                if (CLLocationManager.Status == CLAuthorizationStatus.AuthorizedAlways ||
+                    CLLocationManager.Status == CLAuthorizationStatus.AuthorizedWhenInUse)
                 {
-                    try
+                    // Acquire a reference to the system Location Manager
+                    LocationManager = new CLLocationManager();
+                    if (LocationManager != null)
                     {
-                        // Start with the last known location
-                        if (!UpdateLocation(LocationManager.Location))
+                        try
                         {
-                            // Request location
-                            LocationManager.LocationsUpdated += LocationManager_LocationsUpdated;
-                            LocationManager.StartUpdatingLocation();
+                            // Start with the last known location
+                            if (!UpdateLocation(LocationManager.Location))
+                            {
+                                // Request location
+                                LocationManager.LocationsUpdated += LocationManager_LocationsUpdated;
+                                LocationManager.StartUpdatingLocation();
+                            }
                         }
-                    }
-                    catch
-                    {
-                        // Ignore all error including lack of permission or provider is not enabled
+                        catch
+                        {
+                            // Ignore all error including lack of permission or provider is not enabled
+                        }
                     }
                 }
             }
