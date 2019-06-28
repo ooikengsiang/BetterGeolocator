@@ -18,7 +18,7 @@
         <RepositoryUrl>https://github.com/ooikengsiang/BetterGeolocator</RepositoryUrl>
 
         <!-- The icon is used in Visual Studio's package manager UI -->
-        <PackageIconUrl>https://github.com/ooikengsiang/BetterGeolocator/raw/master/BetterGeolocatorIcon.png</PackageIconUrl>
+        <PackageIconUrl>https://github.com/ooikengsiang/BetterGeolocator/raw/master/BetterGeolocator/BetterGeolocatorIcon.png</PackageIconUrl>
 
         <!-- License information is displayed on the gallery -->
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
