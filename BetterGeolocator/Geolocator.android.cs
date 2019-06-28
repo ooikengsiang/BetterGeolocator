@@ -1,4 +1,5 @@
-﻿using Android.Content;
+﻿using Android.App;
+using Android.Content;
 using Android.Gms.Common;
 using Android.Gms.Location;
 using Android.Locations;
@@ -10,11 +11,6 @@ namespace BetterGeolocator
 {
     public partial class Geolocator : Java.Lang.Object, Android.Locations.ILocationListener
     {
-        /// <summary>
-        /// Android context that required to make every thing work in Android.
-        /// </summary>
-        private Context AndroidContext { get; set; }
-
         /// <summary>
         /// Reference to Google Map fused location provider.
         /// </summary>
@@ -31,14 +27,6 @@ namespace BetterGeolocator
         private LocationManager LocationManager { get; set; }
 
         /// <summary>
-        /// Default constructor for Android platform.
-        /// </summary>
-        public Geolocator(Context context)
-        {
-            AndroidContext = context;
-        }
-
-        /// <summary>
         /// Start listen to location update / gatherer device location.
         /// </summary>
         private async void StartLocationUpdate()
@@ -49,71 +37,68 @@ namespace BetterGeolocator
             {
                 var isRequestLocationSuccessful = false;
 
-                if (AndroidContext != null)
+                // Check if Google Play service is available, if it is available, then we can only use fused location service
+                if (GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(Application.Context) == ConnectionResult.Success)
                 {
-                    // Check if Google Play service is available, if it is available, then we can only use fused location service
-                    if (GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(AndroidContext) == ConnectionResult.Success)
+                    try
                     {
-                        try
+                        FusedLocationClient = LocationServices.GetFusedLocationProviderClient(Application.Context);
+                        if (FusedLocationClient != null)
                         {
-                            FusedLocationClient = LocationServices.GetFusedLocationProviderClient(AndroidContext);
-                            if (FusedLocationClient != null)
+                            // Try get the cached location
+                            if (!UpdateLocation(await FusedLocationClient.GetLastLocationAsync()))
                             {
-                                // Try get the cached location
-                                if (!UpdateLocation(await FusedLocationClient.GetLastLocationAsync()))
-                                {
-                                    // Then request the location update
-                                    var locationRequest = new LocationRequest()
-                                        .SetPriority(LocationRequest.PriorityHighAccuracy)
-                                        .SetInterval(5000) // Google document mention 5 seconds
-                                        .SetFastestInterval(0);
-                                    FusedLocationCallback = new LocationCallback();
-                                    FusedLocationCallback.LocationResult += FusedLocationCallback_LocationResult;
-                                    await FusedLocationClient.RequestLocationUpdatesAsync(locationRequest, FusedLocationCallback);
-                                }
-
-                                isRequestLocationSuccessful = true;
+                                // Then request the location update
+                                var locationRequest = new LocationRequest()
+                                    .SetPriority(LocationRequest.PriorityHighAccuracy)
+                                    .SetInterval(5000) // Google document mention 5 seconds
+                                    .SetFastestInterval(0);
+                                FusedLocationCallback = new LocationCallback();
+                                FusedLocationCallback.LocationResult += FusedLocationCallback_LocationResult;
+                                await FusedLocationClient.RequestLocationUpdatesAsync(locationRequest, FusedLocationCallback);
                             }
-                        }
-                        catch
-                        {
-                            // Ignore all error including lack of permission or provider is not enabled
+
+                            isRequestLocationSuccessful = true;
                         }
                     }
-
-                    // In some event that Google Play service is not available, fall back to Android location instead
-                    if (!isRequestLocationSuccessful)
+                    catch
                     {
-                        // Acquire a reference to the system Location Manager
-                        LocationManager = (LocationManager)AndroidContext.GetSystemService(Context.LocationService);
-                        if (LocationManager != null &&
-                            LocationManager.AllProviders != null)
-                        {
-                            // Get location from all provider to increase the chances of getting a location
-                            foreach (var provider in LocationManager.AllProviders)
-                            {
-                                try
-                                {
-                                    // Try get the cached location
-                                    if (!UpdateLocation(LocationManager.GetLastKnownLocation(provider)))
-                                    {
-                                        // Then request the location update
-                                        LocationManager.RequestLocationUpdates(provider, 0, 0f, this);
+                        // Ignore all error including lack of permission or provider is not enabled
+                    }
+                }
 
-                                        isRequestLocationSuccessful = true;
-                                    }
-                                    else
-                                    {
-                                        // No need to get next provider for location since we already have the location
-                                        isRequestLocationSuccessful = true;
-                                        break;
-                                    }
-                                    
-                                }
-                                catch
+                // In some event that Google Play service is not available, fall back to Android location instead
+                if (!isRequestLocationSuccessful)
+                {
+                    // Acquire a reference to the system Location Manager
+                    LocationManager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
+                    if (LocationManager != null &&
+                        LocationManager.AllProviders != null)
+                    {
+                        // Get location from all provider to increase the chances of getting a location
+                        foreach (var provider in LocationManager.AllProviders)
+                        {
+                            try
+                            {
+                                // Try get the cached location
+                                if (!UpdateLocation(LocationManager.GetLastKnownLocation(provider)))
                                 {
-                                    // Ignore all error including lack of permission or provider is not enabled
+                                    // Then request the location update
+                                    LocationManager.RequestLocationUpdates(provider, 0, 0f, this);
+
+                                    isRequestLocationSuccessful = true;
                                 }
+                                else
+                                {
+                                    // No need to get next provider for location since we already have the location
+                                    isRequestLocationSuccessful = true;
+                                    break;
+                                }
+
+                            }
+                            catch
+                            {
+                                // Ignore all error including lack of permission or provider is not enabled
                             }
                         }
                     }

@@ -39,7 +39,7 @@ namespace BetterGeolocator.Droid.Sample
 
             // We can start buffer the location before user click get location.
             // This enabled the location to retrieve faster but it will ignore any error such as lack of permission.
-            Geolocator = new Geolocator(this);
+            Geolocator = new Geolocator();
             Geolocator.StartCacheLocation();
         }
 
