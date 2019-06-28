@@ -25,7 +25,7 @@ private async void GetDeciceCurrentLocation()
     // TODO: Check if we have the permission to access the location
 
     // Retrieve device current location with 30 seconds timeout and 200 meters accuracy
-    var geolocator = new Geolocator(this);
+    var geolocator = new Geolocator();
     var location = await geolocator.GetLocation(TimeSpan.FromSeconds(30), 200);
     if (location.Status == GeolocationStatus.Successful)
     {
