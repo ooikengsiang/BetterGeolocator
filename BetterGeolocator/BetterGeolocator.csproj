@@ -7,7 +7,7 @@
         <PackageId>BetterGeolocator</PackageId>
 
         <!-- The package version number that is used when resolving dependencies -->
-        <PackageVersion>1.0.0</PackageVersion>
+        <PackageVersion>1.1.0</PackageVersion>
 
         <!-- Package title that appears directly on the gallery -->
         <Title>Better Geolocator</Title>
@@ -28,13 +28,13 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 
         <!-- The description can be used in package manager UI. Note that the nuget.org gallery uses information you add in the portal. -->
-        <PackageDescription>Better Geolocator is a cross-platforms location library written in C# that focus on getting a usable location as quickly as possible with the least amount of code. In the event when the latest high accurate location is not available, the next best location will be return instead. Thus allow application to continue to work if needed. For example, when user is inside a building. In Android implementation, the library handle more than just location. The library uses Fused Location Provider from Google Play Service because of it's better performance. If Google Play service is not available, Android's Location Manager will use used automatically instead.</PackageDescription>
+        <PackageDescription>Better Geolocator is a cross-platforms location library written in C# for Android, iOS and UWP that focus on getting a usable location as quickly as possible with the least amount of code.</PackageDescription>
 
         <!-- Copyright information -->
         <Copyright>Copyright © 2019 ooiks.com</Copyright>
 
         <!-- Tags appear in the gallery and can be used for tag searches -->
-        <PackageTags>Xamarin Android iOS Location</PackageTags>
+        <PackageTags>Xamarin Android iOS UWP Location Geolocator GPS</PackageTags>
     </PropertyGroup>
 
     <!--Constants-->
