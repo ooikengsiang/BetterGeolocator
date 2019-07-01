@@ -16,6 +16,7 @@
         <Authors>Ooi Keng Siang</Authors>
 
         <!-- URL for the repository where the source code for the package resides -->
+        <PackageProjectUrl>https://github.com/ooikengsiang/BetterGeolocator</PackageProjectUrl>
         <RepositoryUrl>https://github.com/ooikengsiang/BetterGeolocator</RepositoryUrl>
 
         <!-- The icon is used in Visual Studio's package manager UI -->
@@ -29,6 +30,7 @@
 
         <!-- The description can be used in package manager UI. Note that the nuget.org gallery uses information you add in the portal. -->
         <PackageDescription>Better Geolocator is a cross-platforms location library written in C# for Android, iOS and UWP that focus on getting a usable location as quickly as possible with the least amount of code.</PackageDescription>
+        <Description>Better Geolocator is a cross-platforms location library written in C# for Android, iOS and UWP that focus on getting a usable location as quickly as possible with the least amount of code.</Description>
 
         <!-- Copyright information -->
         <Copyright>Copyright © 2019 ooiks.com</Copyright>
