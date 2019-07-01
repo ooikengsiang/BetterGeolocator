@@ -12,13 +12,16 @@ namespace BetterGeolocator
         private CLLocationManager LocationManager { get; set; }
 
         /// <summary>
-        /// Start listen to location update / gatherer device location.
+        /// Start listen to location update / gather device location.
         /// </summary>
         private void StartLocationUpdate()
         {
             // Don't start another location manager if there is one already running
             if (LocationManager == null)
             {
+                var isRequestLocationSuccessful = false;
+                var isLastKnownLocationUseable = false;
+
                 // Check permission
                 if (CLLocationManager.Status == CLAuthorizationStatus.AuthorizedAlways ||
                     CLLocationManager.Status == CLAuthorizationStatus.AuthorizedWhenInUse)
@@ -29,19 +32,34 @@ namespace BetterGeolocator
                     {
                         try
                         {
-                            // Start with the last known location
+                            // Try get the last known location or current device location
                             if (!UpdateLocation(LocationManager.Location))
                             {
                                 // Request location
                                 LocationManager.LocationsUpdated += LocationManager_LocationsUpdated;
                                 LocationManager.StartUpdatingLocation();
                             }
+                            else
+                            {
+                                // No need to get new location since we already have the location
+                                isLastKnownLocationUseable = true;
+                            }
+
+                            isRequestLocationSuccessful = true;
                         }
                         catch
                         {
                             // Ignore all error including lack of permission or provider is not enabled
                         }
                     }
+                }
+
+                // Stop location service if all failed
+                if (!isRequestLocationSuccessful)
+                {
+                    StopLocationUpdate(isLastKnownLocationUseable ?
+                        GeolocationStatus.Successful :
+                        GeolocationStatus.SetupError);
                 }
             }
         }
