@@ -27,7 +27,7 @@ namespace BetterGeolocator
         private LocationManager LocationManager { get; set; }
 
         /// <summary>
-        /// Start listen to location update / gatherer device location.
+        /// Start listen to location update / gather device location.
         /// </summary>
         private async void StartLocationUpdate()
         {
@@ -36,6 +36,7 @@ namespace BetterGeolocator
                 LocationManager == null)
             {
                 var isRequestLocationSuccessful = false;
+                var isLastKnownLocationUseable = false;
 
                 // Check if Google Play service is available, if it is available, then we can only use fused location service
                 if (GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(Application.Context) == ConnectionResult.Success)
@@ -45,7 +46,7 @@ namespace BetterGeolocator
                         FusedLocationClient = LocationServices.GetFusedLocationProviderClient(Application.Context);
                         if (FusedLocationClient != null)
                         {
-                            // Try get the cached location
+                            // Try get the last known location or current device location
                             if (!UpdateLocation(await FusedLocationClient.GetLastLocationAsync()))
                             {
                                 // Then request the location update
@@ -56,6 +57,11 @@ namespace BetterGeolocator
                                 FusedLocationCallback = new LocationCallback();
                                 FusedLocationCallback.LocationResult += FusedLocationCallback_LocationResult;
                                 await FusedLocationClient.RequestLocationUpdatesAsync(locationRequest, FusedLocationCallback);
+                            }
+                            else
+                            {
+                                // No need to get next provider for location since we already have the location
+                                isLastKnownLocationUseable = true;
                             }
 
                             isRequestLocationSuccessful = true;
@@ -80,7 +86,7 @@ namespace BetterGeolocator
                         {
                             try
                             {
-                                // Try get the cached location
+                                // Try get the last known location or current device location
                                 if (!UpdateLocation(LocationManager.GetLastKnownLocation(provider)))
                                 {
                                     // Then request the location update
@@ -92,9 +98,9 @@ namespace BetterGeolocator
                                 {
                                     // No need to get next provider for location since we already have the location
                                     isRequestLocationSuccessful = true;
+                                    isLastKnownLocationUseable = true;
                                     break;
                                 }
-
                             }
                             catch
                             {
@@ -107,7 +113,9 @@ namespace BetterGeolocator
                 // Stop location service if all failed
                 if (!isRequestLocationSuccessful)
                 {
-                    StopLocationUpdate(GeolocationStatus.SetupError);
+                    StopLocationUpdate(isLastKnownLocationUseable ? 
+                        GeolocationStatus.Successful :
+                        GeolocationStatus.SetupError);
                 }
             }
         }
