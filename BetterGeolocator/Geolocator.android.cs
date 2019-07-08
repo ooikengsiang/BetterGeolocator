@@ -1,4 +1,4 @@
-using Android;
+﻿using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -38,6 +38,35 @@ namespace BetterGeolocator
         }
 
         /// <summary>
+        /// Check if Google Play is installed and Google Map is enabled so that we can use fused location provider.
+        /// </summary>
+        /// <returns>Return true if Google Play is installed and Google Map is enabled.</returns>
+        private bool IsGooglePlayLocationAvailableAndEnabled()
+        {
+            bool isAvailableAndEnabled = false;
+
+            try
+            {
+                // Check if Google Play service is available
+                if (GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(Application.Context) == ConnectionResult.Success)
+                {
+                    // If Google Map is not installed or disabled on the device, fused location won't return any location, thus it is useless
+                    var appInfo = Application.Context.PackageManager.GetApplicationInfo("com.google.android.apps.maps", 0);
+                    if (appInfo != null && appInfo.Enabled)
+                    {
+                        isAvailableAndEnabled = true;
+                    }
+                }
+            }
+            catch
+            {
+                // It is possible that Google Play service is available but Google Map is not installed
+            }
+
+            return isAvailableAndEnabled;
+        }
+
+        /// <summary>
         /// Start listen to location update / gather device location.
         /// </summary>
         private async void StartLocationUpdate()
@@ -53,7 +82,7 @@ namespace BetterGeolocator
                 if (IsPermissionGrantedImpl())
                 {
                     // Check if Google Play service is available, if it is available, then we can only use fused location service
-                    if (GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(Application.Context) == ConnectionResult.Success)
+                    if (IsGooglePlayLocationAvailableAndEnabled())
                     {
                         try
                         {
