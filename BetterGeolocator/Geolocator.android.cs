@@ -151,12 +151,14 @@ namespace BetterGeolocator
 
             if (FusedLocationClient != null)
             {
+                // Stop listen to location changes
                 if (FusedLocationCallback != null)
                 {
                     FusedLocationCallback.LocationResult -= FusedLocationCallback_LocationResult;
                     FusedLocationClient.RemoveLocationUpdates(FusedLocationCallback);
                     FusedLocationCallback = null;
                 }
+                FusedLocationClient.Dispose();
                 FusedLocationClient = null;
             }
 
@@ -164,8 +166,7 @@ namespace BetterGeolocator
             {
                 // Stop listen to location changes
                 LocationManager.RemoveUpdates(this);
-
-                // Remove the reference
+                LocationManager.Dispose();
                 LocationManager = null;
             }
 
