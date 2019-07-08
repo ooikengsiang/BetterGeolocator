@@ -37,7 +37,7 @@ namespace BetterGeolocator
 
                 try
                 {
-                    // Acquire a reference to the system Windows geolocator
+                    // Acquire a reference to the system Windows geolocator 
                     WindowsGeolocator = new Windows.Devices.Geolocation.Geolocator()
                     {
                         DesiredAccuracyInMeters = (int)DefaultTargetAccuracy,
@@ -63,12 +63,14 @@ namespace BetterGeolocator
                     // Ignore all error including lack of permission or provider is not enabled
                 }
 
-                // Stop location service if all failed
+                // Stop location service if initialized failed or we already have the location
                 if (!isRequestLocationSuccessful)
                 {
-                    StopLocationUpdate(isLastKnownLocationUseable ?
-                        GeolocationStatus.Successful :
-                        GeolocationStatus.SetupError);
+                    StopLocationUpdate(GeolocationStatus.SetupError);
+                }
+                else if (isLastKnownLocationUseable)
+                {
+                    StopLocationUpdate(GeolocationStatus.Successful);
                 }
             }
         }

@@ -125,12 +125,14 @@ namespace BetterGeolocator
                     }
                 }
 
-                // Stop location service if all failed
+                // Stop location service if initialized failed or we already have the location
                 if (!isRequestLocationSuccessful)
                 {
-                    StopLocationUpdate(isLastKnownLocationUseable ? 
-                        GeolocationStatus.Successful :
-                        GeolocationStatus.SetupError);
+                    StopLocationUpdate(GeolocationStatus.SetupError);
+                }
+                else if (isLastKnownLocationUseable)
+                {
+                    StopLocationUpdate(GeolocationStatus.Successful);
                 }
             }
         }
