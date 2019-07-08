@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace BetterGeolocator
 {
@@ -8,6 +8,21 @@ namespace BetterGeolocator
         /// Reference to Windows geolocator.
         /// </summary>
         private Windows.Devices.Geolocation.Geolocator WindowsGeolocator { get; set; }
+
+        /// <summary>
+        /// Check if location permission is already granted.
+        /// </summary>
+        /// <returns>Return true if location permission is granted, else false.</returns>
+        private bool IsPermissionGrantedImpl()
+        {
+            // Re-use the geolocator if found
+            var winGeolocator = WindowsGeolocator;
+            if (winGeolocator == null)
+            {
+                winGeolocator = new Windows.Devices.Geolocation.Geolocator();
+            }
+            return winGeolocator.LocationStatus != Windows.Devices.Geolocation.PositionStatus.Disabled;
+        }
 
         /// <summary>
         /// Start listen to location update / gather device location.

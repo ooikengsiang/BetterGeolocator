@@ -67,6 +67,19 @@ namespace BetterGeolocator
         }
 
         /// <summary>
+        /// Check if location permission is already granted.
+        /// </summary>
+        /// <returns>Return true if location permission is granted, else false.</returns>
+        public bool IsPermissionGranted()
+        {
+#if NETSTANDARD
+            return false;
+#else
+            return IsPermissionGrantedImpl();
+#endif
+        }
+
+        /// <summary>
         /// Retrieve the best / most accurate location of current device within the given time.
         /// If desired accuracy location is found, the function will return that immediately.
         /// </summary>

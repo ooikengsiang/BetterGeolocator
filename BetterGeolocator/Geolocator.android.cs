@@ -1,4 +1,4 @@
-﻿using Android;
+using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -29,6 +29,15 @@ namespace BetterGeolocator
         private LocationManager LocationManager { get; set; }
 
         /// <summary>
+        /// Check if location permission is already granted.
+        /// </summary>
+        /// <returns>Return true if location permission is granted, else false.</returns>
+        private bool IsPermissionGrantedImpl()
+        {
+            return Android.Support.V4.Content.ContextCompat.CheckSelfPermission(Application.Context, Manifest.Permission.AccessFineLocation) == Permission.Granted;
+        }
+
+        /// <summary>
         /// Start listen to location update / gather device location.
         /// </summary>
         private async void StartLocationUpdate()
@@ -41,7 +50,7 @@ namespace BetterGeolocator
                 var isLastKnownLocationUseable = false;
 
                 // Check permission
-                if (Android.Support.V4.Content.ContextCompat.CheckSelfPermission(Application.Context, Manifest.Permission.AccessFineLocation) == Permission.Granted)
+                if (IsPermissionGrantedImpl())
                 {
                     // Check if Google Play service is available, if it is available, then we can only use fused location service
                     if (GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(Application.Context) == ConnectionResult.Success)

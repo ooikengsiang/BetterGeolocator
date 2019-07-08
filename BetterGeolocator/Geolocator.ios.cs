@@ -1,4 +1,4 @@
-﻿using CoreLocation;
+using CoreLocation;
 using Foundation;
 using System;
 
@@ -12,6 +12,16 @@ namespace BetterGeolocator
         private CLLocationManager LocationManager { get; set; }
 
         /// <summary>
+        /// Check if location permission is already granted.
+        /// </summary>
+        /// <returns>Return true if location permission is granted, else false.</returns>
+        private bool IsPermissionGrantedImpl()
+        {
+            return CLLocationManager.Status == CLAuthorizationStatus.AuthorizedAlways ||
+                CLLocationManager.Status == CLAuthorizationStatus.AuthorizedWhenInUse;
+        }
+
+        /// <summary>
         /// Start listen to location update / gather device location.
         /// </summary>
         private void StartLocationUpdate()
@@ -23,8 +33,7 @@ namespace BetterGeolocator
                 var isLastKnownLocationUseable = false;
 
                 // Check permission
-                if (CLLocationManager.Status == CLAuthorizationStatus.AuthorizedAlways ||
-                    CLLocationManager.Status == CLAuthorizationStatus.AuthorizedWhenInUse)
+                if (IsPermissionGrantedImpl())
                 {
                     // Acquire a reference to the system Location Manager
                     LocationManager = new CLLocationManager();
