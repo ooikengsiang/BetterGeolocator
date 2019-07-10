@@ -174,7 +174,7 @@ namespace BetterGeolocator
                                             break;
                                         }
                                     }
-                                    catch (Exception ex)
+                                    catch
                                     {
                                         // Ignore all error including lack of permission or provider is not enabled
                                     }
