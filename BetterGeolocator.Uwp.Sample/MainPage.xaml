@@ -14,20 +14,26 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock x:Name="ResultTextBlock"/>
 
-        <Button x:Name="GetLocationButton" 
-                Content="Get Location"
-                HorizontalAlignment="Stretch"
-                Grid.Row="1"
-                Click="GetLocationButton_Click"/>
-
-        <Button x:Name="ClearButton" 
+        <Button x:Name="ClearCacheLocationButton" 
                 Content="Clear"
                 HorizontalAlignment="Stretch"
+                Grid.Row="1"
+                Click="ClearCacheLocationButton_Click"/>
+        <Button x:Name="GetLocationForegroundButton" 
+                Content="Get Location (Foreground)"
+                HorizontalAlignment="Stretch"
                 Grid.Row="2"
-                Click="ClearButton_Click"/>
+                Click="GetLocationForegroundButton_Click"/>
+        <Button x:Name="GetLocationBackgroundButton" 
+                Content="Get Location (Background)"
+                HorizontalAlignment="Stretch"
+                Grid.Row="3"
+                Click="GetLocationBackgroundButton_Click"/>
+
     </Grid>
 </Page>
