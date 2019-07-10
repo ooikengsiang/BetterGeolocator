@@ -67,103 +67,133 @@ namespace BetterGeolocator
         }
 
         /// <summary>
+        /// Ensure the code that required to run on main thread is run on main thread.
+        /// </summary>
+        private void InvokeOnMainThread(Action action)
+        {
+            // Check if we are currently running on main thread
+            bool isMainThreadCurrently;
+            if (Build.VERSION.SdkInt > BuildVersionCodes.M)
+            {
+                isMainThreadCurrently = Looper.MainLooper.IsCurrentThread;
+            }
+            else
+            {
+                isMainThreadCurrently = Looper.MyLooper() == Looper.MainLooper;
+            }
+            
+            if (isMainThreadCurrently)
+            {
+                action();
+            }
+            else
+            {
+                var handler = new Handler(Looper.MainLooper);
+                handler.Post(action);
+            }
+        }
+
+        /// <summary>
         /// Start listen to location update / gather device location.
         /// </summary>
-        private async void StartLocationUpdate()
+        private void StartLocationUpdate()
         {
-            // Don't start another location manager if there is one already running
-            if (FusedLocationClient == null ||
-                LocationManager == null)
+            InvokeOnMainThread(async () =>
             {
-                var isRequestLocationSuccessful = false;
-                var isLastKnownLocationUseable = false;
-
-                // Check permission
-                if (IsPermissionGrantedImpl())
+                // Don't start another location manager if there is one already running
+                if (FusedLocationClient == null ||
+                    LocationManager == null)
                 {
-                    // Check if Google Play service is available, if it is available, then we can only use fused location service
-                    if (IsGooglePlayLocationAvailableAndEnabled())
-                    {
-                        try
-                        {
-                            FusedLocationClient = LocationServices.GetFusedLocationProviderClient(Application.Context);
-                            if (FusedLocationClient != null)
-                            {
-                                // Try get the last known location or current device location
-                                if (!UpdateLocation(await FusedLocationClient.GetLastLocationAsync()))
-                                {
-                                    // Then request the location update
-                                    var locationRequest = new LocationRequest()
-                                        .SetPriority(LocationRequest.PriorityHighAccuracy)
-                                        .SetInterval(5000) // Google document mention 5 seconds
-                                        .SetFastestInterval(0);
-                                    FusedLocationCallback = new LocationCallback();
-                                    FusedLocationCallback.LocationResult += FusedLocationCallback_LocationResult;
-                                    await FusedLocationClient.RequestLocationUpdatesAsync(locationRequest, FusedLocationCallback);
-                                }
-                                else
-                                {
-                                    // No need to get next provider for location since we already have the location
-                                    isLastKnownLocationUseable = true;
-                                }
+                    var isRequestLocationSuccessful = false;
+                    var isLastKnownLocationUseable = false;
 
-                                isRequestLocationSuccessful = true;
-                            }
-                        }
-                        catch
-                        {
-                            // Ignore all error including lack of permission or provider is not enabled
-                        }
-                    }
-
-                    // In some event that Google Play service is not available, fall back to Android location instead
-                    if (!isRequestLocationSuccessful)
+                    // Check permission
+                    if (IsPermissionGrantedImpl())
                     {
-                        // Acquire a reference to the system Location Manager
-                        LocationManager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
-                        if (LocationManager != null &&
-                            LocationManager.AllProviders != null)
+                        // Check if Google Play service is available, if it is available, then we can only use fused location service
+                        if (IsGooglePlayLocationAvailableAndEnabled())
                         {
-                            // Get location from all provider to increase the chances of getting a location
-                            foreach (var provider in LocationManager.AllProviders)
+                            try
                             {
-                                try
+                                FusedLocationClient = LocationServices.GetFusedLocationProviderClient(Application.Context);
+                                if (FusedLocationClient != null)
                                 {
                                     // Try get the last known location or current device location
-                                    if (!UpdateLocation(LocationManager.GetLastKnownLocation(provider)))
+                                    if (!UpdateLocation(await FusedLocationClient.GetLastLocationAsync()))
                                     {
                                         // Then request the location update
-                                        LocationManager.RequestLocationUpdates(provider, 0, 0f, this);
-
-                                        isRequestLocationSuccessful = true;
+                                        var locationRequest = new LocationRequest()
+                                            .SetPriority(LocationRequest.PriorityHighAccuracy)
+                                            .SetInterval(5000) // Google document mention 5 seconds
+                                            .SetFastestInterval(0);
+                                        FusedLocationCallback = new LocationCallback();
+                                        FusedLocationCallback.LocationResult += FusedLocationCallback_LocationResult;
+                                        await FusedLocationClient.RequestLocationUpdatesAsync(locationRequest, FusedLocationCallback);
                                     }
                                     else
                                     {
                                         // No need to get next provider for location since we already have the location
-                                        isRequestLocationSuccessful = true;
                                         isLastKnownLocationUseable = true;
-                                        break;
                                     }
+
+                                    isRequestLocationSuccessful = true;
                                 }
-                                catch
+                            }
+                            catch
+                            {
+                                // Ignore all error including lack of permission or provider is not enabled
+                            }
+                        }
+
+                        // In some event that Google Play service is not available, fall back to Android location instead
+                        if (!isRequestLocationSuccessful)
+                        {
+                            // Acquire a reference to the system Location Manager
+                            LocationManager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
+                            if (LocationManager != null &&
+                                LocationManager.AllProviders != null)
+                            {
+                                // Get location from all provider to increase the chances of getting a location
+                                foreach (var provider in LocationManager.AllProviders)
                                 {
-                                    // Ignore all error including lack of permission or provider is not enabled
+                                    try
+                                    {
+                                        // Try get the last known location or current device location
+                                        if (!UpdateLocation(LocationManager.GetLastKnownLocation(provider)))
+                                        {
+                                            // Then request the location update
+                                            LocationManager.RequestLocationUpdates(provider, 0, 0f, this);
+
+                                            isRequestLocationSuccessful = true;
+                                        }
+                                        else
+                                        {
+                                            // No need to get next provider for location since we already have the location
+                                            isRequestLocationSuccessful = true;
+                                            isLastKnownLocationUseable = true;
+                                            break;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        // Ignore all error including lack of permission or provider is not enabled
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                // Stop location service if initialized failed or we already have the location
-                if (!isRequestLocationSuccessful)
-                {
-                    StopLocationUpdate(GeolocationStatus.SetupError);
+                    // Stop location service if initialized failed or we already have the location
+                    if (!isRequestLocationSuccessful)
+                    {
+                        StopLocationUpdate(GeolocationStatus.SetupError);
+                    }
+                    else if (isLastKnownLocationUseable)
+                    {
+                        StopLocationUpdate(GeolocationStatus.Successful);
+                    }
                 }
-                else if (isLastKnownLocationUseable)
-                {
-                    StopLocationUpdate(GeolocationStatus.Successful);
-                }
-            }
+            });
         }
 
         /// <summary>
