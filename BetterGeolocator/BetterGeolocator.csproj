@@ -7,7 +7,7 @@
         <PackageId>BetterGeolocator</PackageId>
 
         <!-- The package version number that is used when resolving dependencies -->
-        <PackageVersion>1.1.2</PackageVersion>
+        <PackageVersion>1.1.3</PackageVersion>
 
         <!-- Package title that appears directly on the gallery -->
         <Title>Better Geolocator</Title>
