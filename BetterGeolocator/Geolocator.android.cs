@@ -16,12 +16,12 @@ namespace BetterGeolocator
         /// <summary>
         /// Reference to Google Map fused location provider.
         /// </summary>
-        private FusedLocationProviderClient FusedLocationClient;
+        private FusedLocationProviderClient FusedLocationClient { get; set; }
 
         /// <summary>
         /// Callback class that will pass the location from fused location provided.
         /// </summary>
-        private LocationCallback FusedLocationCallback;
+        private LocationCallback FusedLocationCallback { get; set; }
 
         /// <summary>
         /// Reference to Android location manager.
