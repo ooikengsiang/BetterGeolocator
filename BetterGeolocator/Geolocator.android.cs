@@ -145,10 +145,10 @@ namespace BetterGeolocator
                             }
                         }
 
-                        // In some event that Google Play service is not available, fall back to Android location instead
-                        if (!isRequestLocationSuccessful)
+                        // In some event that Google Play service is not available or not ready, fall back to Android location instead
+                        // Acquire a reference to the system Location Manager
+                        if (!isLastKnownLocationUseable)
                         {
-                            // Acquire a reference to the system Location Manager
                             LocationManager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
                             if (LocationManager != null &&
                                 LocationManager.AllProviders != null)
@@ -252,7 +252,7 @@ namespace BetterGeolocator
             {
                 foreach (var location in e.Result.Locations)
                 {
-                    OnLocationChanged(location);
+                    UpdateLocation(location);
                 }
             }
         }
