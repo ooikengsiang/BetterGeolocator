@@ -46,6 +46,9 @@
 
     <PropertyGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
         <DefineConstants>ANDROID</DefineConstants>
+
+        <!-- Workaround on error: The "FilterAssemblies" task was not given a value for the required parameter "DesignTimeBuild"  -->
+        <DesignTimeBuild>false</DesignTimeBuild>
     </PropertyGroup>
 
     <PropertyGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
