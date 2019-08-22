@@ -210,8 +210,8 @@ namespace BetterGeolocator
         {
             return new Geolocation()
             {
-                Latitude = location.Coordinate.Longitude,
-                Longitude = location.Coordinate.Latitude,
+                Latitude = location.Coordinate.Latitude,
+                Longitude = location.Coordinate.Longitude,
                 Altitude = location.Altitude,
                 Accuracy = (location.HorizontalAccuracy + location.VerticalAccuracy) / 2,
                 UpdateDateTime = ConvertLocationTimeToDateTime(location.Timestamp)
