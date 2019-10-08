@@ -119,6 +119,7 @@ namespace BetterGeolocator
             if (position != null)
             {
                 if (LastKnownLocation == null ||
+                    LastKnownLocation.Coordinate == null ||
                     !LastKnownLocation.UpdateDateTime.HasValue)
                 {
                     // No location saved so far, accept any new location
@@ -133,7 +134,7 @@ namespace BetterGeolocator
 
                     // Check whether the new location is more or less accurate than saved location
                     // Less is better
-                    var accuracyDelta = position.Coordinate.Accuracy - LastKnownLocation.Accuracy;
+                    var accuracyDelta = position.Coordinate.Accuracy - LastKnownLocation.Coordinate.Accuracy;
                     var isMoreOrSameAccurate = accuracyDelta <= 0;
                     var isSignificantlyLessAccurate = accuracyDelta > AccuracyThreshold;
 
@@ -177,10 +178,13 @@ namespace BetterGeolocator
         {
             return new Geolocation()
             {
-                Latitude = position.Coordinate.Point.Position.Latitude,
-                Longitude = position.Coordinate.Point.Position.Longitude,
-                Altitude = position.Coordinate.Point.Position.Altitude,
-                Accuracy = position.Coordinate.Accuracy,
+                Coordinate = new Geocoordinate()
+                {
+                    Latitude = position.Coordinate.Point.Position.Latitude,
+                    Longitude = position.Coordinate.Point.Position.Longitude,
+                    Altitude = position.Coordinate.Point.Position.Altitude,
+                    Accuracy = position.Coordinate.Accuracy
+                },
                 UpdateDateTime = position.Coordinate.Timestamp.DateTime
             };
         }

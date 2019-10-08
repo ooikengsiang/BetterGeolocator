@@ -4,29 +4,14 @@ using System.Text;
 namespace BetterGeolocator
 {
     /// <summary>
-    /// A location class that can be use in cross platforms.
+    /// A location class with status and timestamps that can be use in cross platforms.
     /// </summary>
     public class Geolocation
     {
         /// <summary>
-        /// Location's longitude.
+        /// Location's coordinate which include accuracy.
         /// </summary>
-        public double Longitude { get; set; }
-
-        /// <summary>
-        /// Location's latitude.
-        /// </summary>
-        public double Latitude { get; set; }
-
-        /// <summary>
-        /// Location's altitude.
-        /// </summary>
-        public double Altitude { get; set; }
-
-        /// <summary>
-        /// Location's accuracy.
-        /// </summary>
-        public double Accuracy { get; set; }
+        public Geocoordinate Coordinate { get; set; }
 
         /// <summary>
         /// The date time where the location is retrieved.
@@ -60,12 +45,11 @@ namespace BetterGeolocator
         {
             var locationStringBuilder = new StringBuilder();
             locationStringBuilder.AppendLine($"Status: {Enum.GetName(typeof(GeolocationStatus), Status)}");
-            locationStringBuilder.AppendLine($"Longitude: {Longitude}");
-            locationStringBuilder.AppendLine($"Latitude: {Latitude}");
-            locationStringBuilder.AppendLine($"Altitude: {Altitude}");
-            locationStringBuilder.AppendLine($"Accuracy: {Accuracy}");
+            locationStringBuilder.AppendLine($"Longitude: {Coordinate?.Longitude}");
+            locationStringBuilder.AppendLine($"Latitude: {Coordinate?.Latitude}");
+            locationStringBuilder.AppendLine($"Altitude: {Coordinate?.Altitude}");
+            locationStringBuilder.AppendLine($"Accuracy: {Coordinate?.Accuracy}");
             locationStringBuilder.AppendLine($"UpdateDateTime: {UpdateDateTime}");
-            locationStringBuilder.AppendLine($"Accuracy: {Accuracy}");
             return locationStringBuilder.ToString();
         }
 
@@ -75,7 +59,7 @@ namespace BetterGeolocator
         /// <returns>True if location's longitude and latitude is available, else false.</returns>
         public bool IsLocationAvailable()
         {
-            return Longitude != 0d && Latitude != 0;
+            return Coordinate != null;
         }
 
         /// <summary>
@@ -96,7 +80,8 @@ namespace BetterGeolocator
         /// <returns>True if the location is accurate.</returns>
         public bool IsAccurate(double accuracy)
         {
-            return Accuracy <= accuracy;
+            return Coordinate != null &&
+                Coordinate.Accuracy <= accuracy;
         }
 
         /// <summary>
@@ -107,10 +92,7 @@ namespace BetterGeolocator
         {
             return new Geolocation()
             {
-                Longitude = Longitude,
-                Latitude = Latitude,
-                Altitude = Altitude,
-                Accuracy = Accuracy,
+                Coordinate = Coordinate?.ToNewGeolocation(),
                 UpdateDateTime = UpdateDateTime,
                 Status = newStatus ?? Status
             };
